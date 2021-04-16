@@ -15,15 +15,32 @@ if __name__ == "__main__":
     path = os.getcwd()
     os.chdir("division/true")
     print(os.getcwd())
-    o = cv2.imread(os.path.join(os.getcwd(), '48.png'))
+    o = cv2.imread(os.path.join(os.getcwd(), '11.png'))
     cv2.imshow("original", o)
     gray = cv2.cvtColor(o, cv2.COLOR_BGR2GRAY)
     ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
     cv2.imshow("binary", binary)
-    retval, labels = cv2.connectedComponents(gray)
-    labels = np.uint8(labels)
-    cv2.imshow("labels", labels)
+    retval, labels = cv2.connectedComponents(binary)
+    print(retval)
+    print(labels)
+    # labels = np.uint8(labels)
+    # cv2.imshow("labels", labels)
 
+    # 构造颜色
+    colors = []
+    for i in range(retval):
+        b = np.random.randint(0, 256)
+        g = np.random.randint(0, 256)
+        r = np.random.randint(0, 256)
+        colors.append((b, g, r))
+    colors[0] = (0, 0, 0)
+    # 画出连通图
+    h, w = gray.shape
+    image = np.zeros((h, w, 3), dtype=np.uint8)
+    for row in range(h):
+        for col in range(w):
+            image[row, col] = colors[labels[row, col]]
+    cv2.imshow("colored labels", image)
 
     # contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     # cv2.drawContours(t_o, contours, -1, (0, 0, 255), 5)
