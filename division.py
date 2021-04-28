@@ -22,10 +22,17 @@ def binary_processing(f_path, s_path, value):
     :param s_path: 图像要保存的路径
     :return:
     """
-    image = cv2.imread(f_path, cv2.IMREAD_UNCHANGED)
-    t, rst = cv2.threshold(image, value, 255, cv2.THRESH_BINARY)
+    image = cv2.imread(f_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(gray, value, 255, cv2.THRESH_BINARY)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    thresh = cv2.erode(thresh, kernel)
+    thresh = cv2.dilate(thresh, kernel)
+    mask = cv2.merge([thresh, thresh, thresh])
+    re_img = cv2.bitwise_or(image, mask)
+    # print(image.shape)
     # 保存处理后的图像
-    if cv2.imwrite(s_path, rst):
+    if cv2.imwrite(s_path, re_img):
         print("二值处理图片生成+1")
 
 
@@ -94,7 +101,7 @@ if __name__ == "__main__":
     print("*****************************")
     print("当前路径为%s" % os.getcwd())
     # 待处理的图像路径
-    process_path = "original-img/false"
+    process_path = "original-img/true"
     # 图像处理后保存的路径
     save_path = "G:\\MyProjects\\python\\Breakout-Identification\\select"
     os.chdir("select/")
